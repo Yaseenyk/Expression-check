@@ -179,4 +179,14 @@
     margin: 20px 0px;
     // border: 1px solid;
 }
+.inner-value input[type="number"] {
+    -moz-appearance: textfield;  
+  }
+  
+  .inner-value input[type="number"]::-webkit-inner-spin-button,
+  .inner-value input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none; 
+    margin: 0;  
+  }
+  
 }
