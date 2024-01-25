@@ -7,7 +7,7 @@ import ButtonComponent from "../components/Buttons/ButtonComponent";
 import "./Expression.scss";
 import DisplayComponent from "../components/DisplayComponent/DisplayComponent";
 import DisplayObjects from "../DisplayObejcts/DisplayObjects";
-
+import Navbar from '../Navbar/Navbar'
 const Expression = () => {
   const [combinator, setCombinator] = useState("AND");
   const [selectRules, setSelectRules] = useState("");
@@ -53,12 +53,19 @@ const Expression = () => {
   }
   return (
     <div className="mainComponent">
+        <div>
+        <Navbar/>
+        </div>
       <div className="mainComponent-inner">
+      (Select Combinator Here)
         <div className="mainComponent-logic">
+            
           <Combinator setCombinator={setCombinator} />
         </div>
         <div className="mainComponent-rules">
+          
           <div className="mainComponent-Selector">
+            
             <Selector setSymbols={setSymbols} setSelectRules={setSelectRules} />
           </div>
           <Logic setValues={setValues} setScore={setScore} />
@@ -67,6 +74,10 @@ const Expression = () => {
               Add Rule
             </Button>
           </div>
+        </div>
+        <div className="text">
+
+        (Display of rules you can select AND/OR Display's accordingly,"X" button will delete the data)
         </div>
         <h3>Rules</h3>
         <div className="DisplayComponent">
@@ -83,6 +94,9 @@ const Expression = () => {
             "No Rules Set..."
           )}
         </div>
+      </div>
+      <div className="text">
+      (Submit Button will Replicate the apu call it will show both And/OR Rules.)
       </div>
       <ButtonComponent setTogglePopupBtn={setTogglePopupBtn}/>
       {togglePopupBtn && (

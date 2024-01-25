@@ -1,3 +1,13 @@
+@mixin mobile {
+    @media only screen and (max-width: 767px) {
+      @content;
+    }
+  }
+  @mixin tablet {
+    @media only screen and (max-width: 1024px) {
+      @content;
+    }
+  }
 .mainComponent {
   display: flex;
   flex-direction: column;
@@ -33,6 +43,7 @@
   }
   .mainComponent-inner {
     // border: 1px solid black;
+    margin-top: 50px;
     height: 60vh;
     display: flex;
     width: 100vw;
@@ -40,10 +51,17 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
+    
+    @include mobile {
+        height: 80vh;
+        width: 100%;
+       }
     .mainComponent-logic {
-      //   border: 1px solid red;
       width: 50%;
+      @include mobile {
+       height: 5vh;
+       width: 80%;
+      }
     }
     .mainComponent-rules {
       margin: 0;
@@ -51,12 +69,19 @@
       display: flex;
       flex-direction: row;
       justify-content: center;
-      align-items: flex-start;
+      align-items: flex-end;
       gap: 30px;
       width: 100%;
-    //   border: 1px solid;
     max-width: 1020px;
       height: 20%;
+      @include mobile {
+        // border: 1px solid;
+        height: 40vh;
+        flex-direction: column;
+       }
+       @include tablet{
+        width: 90%;
+    }
       .mainComponent-Selector {
         display: flex;
         justify-content: flex-start;
@@ -68,6 +93,14 @@
       }
       .inner-value {
         width: 100%;
+        @include mobile {
+            // border: 1px solid;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            height: fit-content;
+            flex-direction: row;
+           }
       }
       .mainComponent-Btn {
         width: 40%;
@@ -98,6 +131,33 @@
     align-items: flex-start;
     gap: 20px;
     overflow-y: scroll;
+    max-width: 1020px;
+    @include tablet{
+        width: 80%;
+    }
+    scrollbar-width: 10px; 
+    scrollbar-color: darkgray lightgray;  
+  
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+  
+    &::-webkit-scrollbar-thumb {
+      background-color: #2B3035;  
+      border-radius: 10px;  
+    }
+  
+    &::-webkit-scrollbar-track {
+      background-color: #0B5ED7;
+      border-radius: 10px; 
+    }
+    @include mobile {
+        width: 90%;
+        margin: 0;
+        padding: 0;
+        height: 40vh;
+        flex-direction: row;
+       }
     .container{
         display: flex;
         flex-direction: column;
@@ -113,4 +173,10 @@
     }
     
   }
+  .text{
+    text-align: center;
+    width: 100%;
+    margin: 20px 0px;
+    // border: 1px solid;
+}
 }
