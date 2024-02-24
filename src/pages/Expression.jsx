@@ -1,109 +1,107 @@
-import React, { useState, useCallback } from "react";
-import Selector from "../components/FormComponents/Selector";
-import Button from "react-bootstrap/Button";
-import Combinator from "../components/RulesComponent/Combinator";
-import Logic from "../components/RulesComponent/Logic";
-import ButtonComponent from "../components/Buttons/ButtonComponent";
+import React, { useState } from "react";
 import "./Expression.scss";
-import DisplayComponent from "../components/DisplayComponent/DisplayComponent";
-import DisplayObjects from "../DisplayObejcts/DisplayObjects";
-import Navbar from '../Navbar/Navbar'
+import { Button, Dropdown } from "react-bootstrap";
+import NameComponent from "../components/NameComponent/NameComponent";
+
 const Expression = () => {
-  const [combinator, setCombinator] = useState("AND");
-  const [selectRules, setSelectRules] = useState("");
-  const [symbols, setSymbols] = useState("");
-  const [values, setValues] = useState("");
-  const [score, setScore] = useState("");
-  const [andRules, setAndRules] = useState([]);
-  const [orRules, setOrRules] = useState([]);
-  const [togglePopupBtn, setTogglePopupBtn] = useState(false);
+  const [combinator, setCombinator] = useState('AND');
+  const [groupOrField, setGroupOrField] = useState('Group');
+  const [inputValue, setInputValue] = useState('');
+  const [rules, setRules] = useState({
+    combinator: combinator,
+    rules: [],
+    not: false
+  });
 
-  const handleAddRule = useCallback(() => {
-    if (selectRules && values && symbols && score !== undefined && combinator) {
-      const newRule = {
-        key: selectRules,
-        output: {
-          value: values,
-          operator: symbols,
-          score: score,
-        },
-      };
+  const handleAddRule = () => {
+    const scoringValue = groupOrField === 'Group' ? 'Group' : 'Field';
+    const valuePrefix = groupOrField === 'Group' ? '+' : '-';
+    const notValue = groupOrField === 'Group' ? false : true;
 
-      if (combinator === "AND") {
-        setAndRules((prevRules) => [...prevRules, newRule]);
-      } else if (combinator === "OR") {
-        setOrRules((prevRules) => [...prevRules, newRule]);
-      }
-    } else {
-      console.error("Invalid values, cannot add a new rule.");
-    }
-  }, [selectRules, values, symbols, score, combinator]);
-
-  const onDeleteRule = (index) => {
-    if (combinator === "AND") {
-      setAndRules((prevRules) => prevRules.filter((_, i) => i !== index));
-    } else if (combinator === "OR") {
-      setOrRules((prevRules) => prevRules.filter((_, i) => i !== index));
-    }
+    setRules(prevRules => ({
+      ...prevRules,
+      not: notValue,
+      rules: [...prevRules.rules, { field: 'First Name', operator: '', value: valuePrefix + inputValue, scoring_value: scoringValue }]
+    }));
   };
-  const handleApiCallDemo=()=>{
-    setAndRules([]);
-    setOrRules([]);
-    setTogglePopupBtn(false)
-  }
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleRuleChange = (index, field, value) => {
+    setRules(prevRules => ({
+      ...prevRules,
+      rules: prevRules.rules.map((rule, i) => 
+        i === index ? { ...rule, [field]: value } : rule
+      )
+    }));
+  };
+
+  const handleCombinatorChange = (selectedCombinator) => {
+    const notValue = selectedCombinator === 'Group' ? false : true;
+
+    setCombinator(selectedCombinator);
+    setRules(prevRules => ({
+      ...prevRules,
+      not: notValue,
+      combinator: selectedCombinator
+    }));
+  };
+
+  const handleGroupOrFieldToggle = () => {
+    setGroupOrField(groupOrField === 'Group' ? 'Field' : 'Group');
+  };
+
+  const combinators = ["AND", "OR"];
+
+  const handleSubmit = () => {
+    const formattedRules = rules.rules.map(rule => ({
+      ...rule,
+      value: (rule.scoring_value === 'Group' ? '+' : '-') + rule.value
+    }));
+
+    console.log({
+      ...rules,
+      rules: formattedRules
+    });
+  };
+
   return (
     <div className="mainComponent">
-        <div>
-        <Navbar/>
-        </div>
-      <div className="mainComponent-inner">
-      (Select Combinator Here)
-        <div className="mainComponent-logic">
-            
-          <Combinator setCombinator={setCombinator} />
-        </div>
-        <div className="mainComponent-rules">
-          
-          <div className="mainComponent-Selector">
-            
-            <Selector setSymbols={setSymbols} setSelectRules={setSelectRules} />
-          </div>
-          <Logic setValues={setValues} setScore={setScore} />
-          <div className="mainComponent-Btn">
-            <Button variant="primary" onClick={handleAddRule}>
-              Add Rule
-            </Button>
-          </div>
-        </div>
-        <div className="text">
-
-        (Display of rules you can select AND/OR Display's accordingly,"X" button will delete the data)
-        </div>
-        <h3>Rules</h3>
-        <div className="DisplayComponent">
-          {(combinator === "AND" && andRules.length > 0) ||
-          (combinator === "OR" && orRules.length > 0) ? (
-            <DisplayComponent
-              rules={{
-                rules: combinator === "AND" ? andRules : orRules,
-                combinator,
-              }}
-              onDeleteRule={onDeleteRule}
-            />
-          ) : (
-            "No Rules Set..."
-          )}
-        </div>
+      <div className="Heading">Expression Check</div>
+      <div className="GroupsDisplay">
+        <Dropdown onSelect={handleCombinatorChange}>
+          <Dropdown.Toggle variant="primary" id="dropdown-basic">
+            {combinator}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {combinators.map((option, index) => (
+              <Dropdown.Item key={index} eventKey={option}>{option}</Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+        <Button className="btn" onClick={handleAddRule}>
+          Rule
+        </Button>
+        <Button className="btn" onClick={handleGroupOrFieldToggle}>
+          {groupOrField === 'Group' ? 'Field' : 'Group'}
+        </Button>
+        <Button className="btn" onClick={handleSubmit}>
+          Submit
+        </Button>
       </div>
-      <div className="text">
-      (Submit Button will Replicate the apu call it will show both And/OR Rules.)
+      <div className="NameComponent">
+        {rules.rules.map((rule, index) => (
+          <NameComponent
+            key={index}
+            field={rule.field}
+            operator={rule.operator}
+            value={rule.value}
+            setInput={(field, value) => handleRuleChange(index, field, value)}
+          />
+        ))}
       </div>
-      <ButtonComponent setTogglePopupBtn={setTogglePopupBtn}/>
-      {togglePopupBtn && (
-        <div className="display-obejct">
-          <DisplayObjects orRules={orRules} andRules={andRules} handleApiCallDemo={handleApiCallDemo}/>
-        </div>
-      )}
     </div>
   );
 };
